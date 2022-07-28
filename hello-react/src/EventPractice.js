@@ -5,6 +5,7 @@ function EventPractice() {
 
   const handleChange = (e) => {
     setState({
+      ...state,
       [e.target.name]: e.target.value,
     });
   };
@@ -15,6 +16,12 @@ function EventPractice() {
       message: "",
       username: "",
     });
+  };
+
+  const handlKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleClick();
+    }
   };
 
   return (
@@ -33,6 +40,7 @@ function EventPractice() {
         placeholder='아무거나 입력하세요'
         value={state.message}
         onChange={handleChange}
+        onKeyPress={handlKeyPress}
       ></input>
       <button onClick={handleClick}>확인</button>
     </div>
