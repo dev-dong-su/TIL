@@ -1,8 +1,19 @@
 import "./App.css";
-import EventPractice from "./EventPractice";
+import React, { createRef, forwardRef, useRef } from "react";
+import ScrollBox from "./ScrollBox";
 
 function App() {
-  return <EventPractice name='김희수' age={20}></EventPractice>;
+  const button = React.forwardRef((props, ref) => (
+    <button onClick={() => ref.scrollToBottom()}>맨 밑으로</button>
+  ));
+
+  const ref = createRef(button);
+
+  return (
+    <div>
+      <ScrollBox ref={ref}></ScrollBox>
+    </div>
+  );
 }
 
 export default App;
