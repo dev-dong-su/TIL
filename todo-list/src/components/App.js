@@ -1,72 +1,70 @@
-import React, { useState } from "react";
-import PageTemplate from "./PageTemplate";
-import TodoInput from "./TodoInput";
+import React, { useReducer, useState, useRef, useCallback } from "react";
+import { MdDoNotStep } from "react-icons/md";
+import TodoInsert from "./TodoInsert";
 import TodoList from "./TodoList";
+import TodoTemplate from "./TodoTemplate";
 
-var id = 2;
+function createBulkTodos() {
+  const array = [];
+  for (let i = 0; i <= 2500; i++) {
+    array.push({
+      id: i,
+      text: `할 일 ${i}`,
+      checked: false,
+    });
+  }
+  return array;
+}
+
+function todoReducer(todos, action) {
+  switch (action.type) {
+    case "INSERT":
+      return todos.concat(action.todo);
+
+    case "REMOVE":
+      return todos.filter((todo) => todo.id !== action.id);
+
+    case "TOGGLE":
+      return todos.map((todo) =>
+        todo.id === action.id ? { ...todo, checked: !todo.checked } : todo
+      );
+    default:
+      return todos;
+  }
+}
 
 function App() {
-  const [state, setState] = useState({
-    input: "",
-    todos: [
-      { id: 0, text: "리액트 공부하기", done: true },
-      { id: 1, text: "컴포넌트 스타일링", done: false },
-    ],
-  });
+  const [todos, dispatch] = useReducer(todoReducer, undefined, createBulkTodos);
 
-  const getId = () => {
-    return ++id;
-  };
+  const nextId = useRef(2501);
 
-  const handleChange = (e) => {
-    const { value } = e.target;
-    setState({
-      ...state,
-      input: value,
-    });
-  };
-
-  const handlInsert = () => {
-    const { todos, input } = state;
-    const newTodo = {
-      text: input,
-      done: false,
-      id: getId(),
+  const onInsert = useCallback((text) => {
+    const todo = {
+      id: nextId.current,
+      text,
+      checked: false,
     };
+    dispatch({ type: "INSERT", todo });
+    nextId.current += 1;
+  }, []);
 
-    setState({
-      todos: [...todos, newTodo],
-      input: "",
-    });
-  };
+  const onRemove = useCallback((id) => {
+    dispatch({ type: "REMOVE", id });
+  }, []);
 
-  const handleToggle = (id) => {
-    const { todos } = state;
-    const index = todos.findIndex((todo) => todo.id === id);
-
-    const toggled = {
-      ...todos[index],
-      done: !todos[index].done,
-    };
-
-    setState({
-      todos: [
-        ...todos.slice(0, index),
-        toggled,
-        ...todos.slice(index + 1, todos.length),
-      ],
-    });
-  };
+  const onToggle = useCallback((id) => {
+    dispatch({ type: "TOGGLE", id });
+  }, []);
 
   return (
-    <PageTemplate>
-      <TodoInput
-        onChange={handleChange}
-        onInsert={handlInsert}
-        value={state.input}
-      ></TodoInput>
-      <TodoList todos={state.todos} onToggle={handleToggle}></TodoList>
-    </PageTemplate>
+    <TodoTemplate>
+      <TodoInsert onInsert={onInsert}></TodoInsert>
+      <TodoList
+        todos={todos}
+        onRemove={onRemove}
+        onToggle={onToggle}
+      ></TodoList>
+    </TodoTemplate>
   );
 }
 

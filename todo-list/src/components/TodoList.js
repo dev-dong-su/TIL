@@ -1,14 +1,20 @@
 import React from "react";
-import TodoItem from "./TodoItem";
+import TodoListItem from "./TodoListItem";
+import "../styles/TodoList.scss";
 
-function TodoList({ todos }) {
-  const todoList = todos.map((todo) => (
-    <TodoItem key={todo.id} done={todo.done}>
-      {todo.text}
-    </TodoItem>
-  ));
-
-  return <div>{todoList}</div>;
+function TodoList({ todos, onRemove, onToggle }) {
+  return (
+    <div className='TodoList'>
+      {todos.map((todo) => (
+        <TodoListItem
+          todo={todo}
+          key={todo.id}
+          onRemove={onRemove}
+          onToggle={onToggle}
+        ></TodoListItem>
+      ))}
+    </div>
+  );
 }
 
 export default TodoList;
