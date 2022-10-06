@@ -2,11 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { legacy_createStore } from 'redux';
+import { applyMiddleware, legacy_createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './modules';
+import { createLogger } from 'redux-logger';
+import ReduxThunk from 'redux-thunk';
 
-const store = legacy_createStore(rootReducer);
+const logger = createLogger();
+const store = legacy_createStore(
+  rootReducer,
+  applyMiddleware(logger, ReduxThunk),
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
